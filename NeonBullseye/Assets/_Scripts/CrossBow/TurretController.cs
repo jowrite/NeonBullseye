@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 public class TurretController : MonoBehaviour
 {
+    
     [Header("Movement Settings")]
     [SerializeField] private float verticalSpeed = 5f;
     [SerializeField] private float minY = -4f;
@@ -22,9 +24,39 @@ public class TurretController : MonoBehaviour
     private float currentCharge = 0f;
     private bool isCharging = false;
 
-    private void Start()
+    private void Update()
     {
-        //Subscribe to input events
-        Input.im.OnVerticalMovement += HandleVerticalInput;
+        if (GameManager.gm.isGamePaused || !GameManager.gm.isGameStarted) return;
+
+        HandleMovement();
+        HandleRotation();
+        HandleShooting();
     }
+
+    private void HandleMovement()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleRotation()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleShooting()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void StartCharging()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ReleaseArrow()
+    {
+        throw new NotImplementedException();
+    }
+
+
 }

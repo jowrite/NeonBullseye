@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using UnityEngine.InputSystem;
 
 public class Input : Singleton<Input>
@@ -8,7 +7,7 @@ public class Input : Singleton<Input>
 
     // Public events for input actions
     public event System.Action<float> OnVerticalMovement;
-    public event System.Action<float> OnHorizontalRotation;
+    public event System.Action<float> OnRotation;
     public event System.Action OnChargeStart;
     public event System.Action OnChargeRelease;
     public event System.Action OnPause;
@@ -17,53 +16,31 @@ public class Input : Singleton<Input>
     {
         base.Awake();
         _inputs = new ShooterInputActions();
+
+        //Enable the Gameplay action map by default
+        _inputs.Gameplay.Enable();
     }
 
     private void OnEnable()
     {
-        _inputs.Enable();
-
         // Gameplay actions
-        _inputs.Gameplay.VerticalMovement.performed += HandleVerticalMovement;
-        _inputs.Gameplay.HorizontalRotation.performed += HandleHorizontalRotation;
-        _inputs.Gameplay.Charge.started += HandleChargeStart;
-        _inputs.Gameplay.Charge.canceled += HandleChargeRelease;
-        _inputs.Gameplay.Pause.performed += HandlePause;
+        _inputs.Gameplay.VerticalMovement.performed += ctx => OnVerticalMovement?.Invoke(ctx.ReadValue<float>());
+        _inputs.Gameplay.Rotation.performed += ctx => OnRotation?.Invoke(ctx.ReadValue<float>());
+        _inputs.Gameplay.Charge.started += _ => OnChargeStart?.Invoke();
+        _inputs.Gameplay.Charge.canceled += _ => OnChargeRelease?.Invoke();
+        _inputs.Gameplay.Pause.performed += _ => OnPause?.Invoke();
     }
 
     private void OnDisable()
     {
-        _inputs.Disable();
-
-        _inputs.Gameplay.VerticalMovement.performed -= HandleVerticalMovement;
-        _inputs.Gameplay.HorizontalRotation.performed -= HandleHorizontalRotation;
-        _inputs.Gameplay.Charge.started -= HandleChargeStart;
-        _inputs.Gameplay.Charge.canceled -= HandleChargeRelease;
-        _inputs.Gameplay.Pause.performed -= HandlePause;
+        _inputs.Gameplay.Disable();
     }
 
-    private void HandleVerticalMovement(InputAction.CallbackContext context)
+    //Helper method to switch action maps
+    public void SwitchToUIInput()
     {
-        OnVerticalMovement?.Invoke(context.ReadValue<float>());
+        _inputs.Gameplay.Disable();
+        _inputs.UI.Enable();
     }
 
-    private void HandleHorizontalRotation(InputAction.CallbackContext context)
-    {
-        OnHorizontalRotation?.Invoke(context.ReadValue<float>());
-    }
-
-    private void HandleChargeStart(InputAction.CallbackContext context)
-    {
-        OnChargeStart?.Invoke();
-    }
-
-    private void HandleChargeRelease(InputAction.CallbackContext context)
-    {
-        OnChargeRelease?.Invoke();
-    }
-
-    private void HandlePause(InputAction.CallbackContext context)
-    {
-        OnPause?.Invoke();
-    }
 }
