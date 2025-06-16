@@ -42,5 +42,4 @@ public class Input : Singleton<Input>
         _inputs.Gameplay.Disable();
         _inputs.UI.Enable();
     }
-
 }
