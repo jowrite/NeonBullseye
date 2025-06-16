@@ -56,4 +56,8 @@ public class GameManager : MonoBehaviour
         // Additional logic for ending the game (show game over UI & score)
     }
 
+    
+
+  
+
 }
