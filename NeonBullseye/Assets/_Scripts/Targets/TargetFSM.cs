@@ -28,7 +28,7 @@ public class TargetFSM : MonoBehaviour
     private Color defaultColor;
 
     private int baseScore = 100; // Base score for hitting a target
-
+    private int patternBonus = 500; // Bonus for hitting a pattern target
 
     private void Awake()
     {
@@ -77,12 +77,15 @@ public class TargetFSM : MonoBehaviour
         if (currentState == TargetState.Pattern)
         {
             PlayPatternEffects();
-            GameManager.gm.HandlePatternHit(this);
+            GameManager.gm.HandlePatternHit(this); //Notify GameManager of pattern hit
+            GameManager.gm.ShowScorePopup(patternBonus, transform.position + Vector3.up * 0.5f); //visual score popup
             SetState(TargetState.Hit);
         }
         else if (currentState == TargetState.Active)
         {
-            GameManager.gm.AddScore(baseScore);
+            PlayNormalHitEffect();
+            GameManager.gm.AddScore(baseScore); //Add base score
+            GameManager.gm.ShowScorePopup(baseScore, transform.position + Vector3.up * 0.5f); //visual score popup
             SetState(TargetState.Hit);
         }
 
@@ -122,9 +125,12 @@ public class TargetFSM : MonoBehaviour
     private void PlayPatternEffects()
     {
         //SFX
+        AudioSource.PlayClipAtPoint(patternSound, transform.position, 0.7f);
         //VFX
+        patternParticles.Play();
         //Shader effects
-
+        targetMaterial.SetFloat("_OutlineEnabled", 1f);
+        targetMaterial.SetColor("_OutlineColor", patternOutlineColor);
     }
 
     private IEnumerator ResetShaderProperties(float delay)

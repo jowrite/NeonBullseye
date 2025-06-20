@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private UIControls ui;
-
+    [SerializeField] private GameObject scorePopupPrefab;
 
     private void Awake()
     {
@@ -150,5 +150,13 @@ public class GameManager : MonoBehaviour
         score += points;
         ui.UpdateScore(score);
     }
+
+    //helper method to show score popup
+    public void ShowScorePopup(int points, Vector3 worldPosition)
+    {
+        GameObject popup = Instantiate(scorePopupPrefab, worldPosition, Quaternion.identity);
+        popup.GetComponent<ScorePopup>().Setup(points);
+    }
+
     #endregion
 }
