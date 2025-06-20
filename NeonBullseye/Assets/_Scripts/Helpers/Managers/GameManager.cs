@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Input.Instance.OnPause += TogglePause;
+        InputManager.Instance.OnPause += TogglePause;
         pm = GetComponent<PatternManager>();
         StartRound();
     }
