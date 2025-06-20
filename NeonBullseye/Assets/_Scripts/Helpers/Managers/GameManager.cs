@@ -31,7 +31,13 @@ public class GameManager : MonoBehaviour
     [Header("Pattern Settings")]
     [SerializeField] private int patternBonus = 500;
     private int currentTargetsHit;
+    private int maxPatternAttempts = 3; // Maximum attempts to hit a pattern
+    private int remainingPatternAttempts;
+    
     private PatternManager pm;
+
+    [Header("UI")]
+    [SerializeField] private UIControls ui;
 
 
     private void Awake()
@@ -51,10 +57,18 @@ public class GameManager : MonoBehaviour
     {
         currentArrows = arrowsPerRound;
         currentTargetsHit = 0;
+        remainingPatternAttempts = maxPatternAttempts;
+
         pm.StartNewRound(currentRound);
         Debug.Log("Starting Round: " + currentRound);
         isGameStarted = true;
-        //UI updates for arrows/targets
+
+        ui.UpdateRound(currentRound, totalRounds);
+        ui.UpdateScore(score);
+        ui.UpdateTargetsHit(currentTargetsHit, targetsPerRound);
+        ui.UpdateArrows(currentArrows, arrowsPerRound);
+        ui.UpdatePatternAttempts(remainingPatternAttempts, maxPatternAttempts);
+        ui.SetupArrowIcons(arrowsPerRound);
     }
 
     private void TogglePause()
@@ -93,11 +107,13 @@ public class GameManager : MonoBehaviour
     public void ArrowShot()
     {
         currentArrows--;
+        ui.UpdateArrows(currentArrows, arrowsPerRound);
         if (currentArrows <= 0) EndRound();
     }
     public void TargetHit()
     {
         currentTargetsHit++;
+        ui.UpdateTargetsHit(currentTargetsHit, targetsPerRound);
         if (currentTargetsHit >= targetsPerRound) EndRound();
     }
 
@@ -110,12 +126,13 @@ public class GameManager : MonoBehaviour
     public void PatternCompleted()
     {
         AddScore(patternBonus);
-        //Special effects or UI updates for completing a pattern
+        ui.PatternSuccess();
     }
 
     public void PatternFailed()
     {
-        //Visual feedback for failed pattern
+        remainingPatternAttempts--;
+        ui.UpdatePatternAttempts(remainingPatternAttempts, maxPatternAttempts);
     }
     #endregion
 
@@ -131,6 +148,7 @@ public class GameManager : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
+        ui.UpdateScore(score);
     }
     #endregion
 }
