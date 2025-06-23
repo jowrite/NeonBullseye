@@ -30,6 +30,39 @@ public class TargetFSM : MonoBehaviour
     private int baseScore = 100; // Base score for hitting a target
     private int patternBonus = 500; // Bonus for hitting a pattern target
 
+    public enum MovementType { Static, SineWave, Swing }
+    [Header("Target Movement Settings")]
+    [SerializeField] private MovementType movementType;
+    [SerializeField] private float moveSpeed = 2f;
+    [SerializeField] private float moveHeight = 1.5f;
+    private HingeJoint2D hinge; //For swing movement
+    private Vector3 startPosition;
+    private float randomOffset;
+
+
+    private void Start()
+    {
+        startPosition = transform.position;
+        randomOffset = Random.Range(0f, 6.28f);
+
+        if (movementType == MovementType.Swing)
+        {
+            SetupSwing();
+        }    
+    }
+
+    private void Update()
+    {
+        switch (movementType)
+        {
+            case MovementType.SineWave:
+                float newY = startPosition.y + Mathf.Sin(Time.time * moveSpeed + randomOffset) * moveHeight;
+                transform.position = new Vector3(startPosition.x, newY, startPosition.z);
+                break;
+        }
+    }
+
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -151,5 +184,30 @@ public class TargetFSM : MonoBehaviour
         }
 
         targetMaterial.SetFloat("_HueShift", 0f);
+    }
+
+    public void SetMovementParams(MovementType type, float swingSpeed, float moveHeight)
+    {
+        this.movementType = type;
+        this.moveHeight = moveHeight;
+
+        if (hinge != null)
+        {
+            JointMotor2D motor = hinge.motor;
+            motor.motorSpeed = swingSpeed;
+            hinge.motor = motor;
+        }
+    }
+
+    private void SetupSwing()
+    {
+        hinge = gameObject.AddComponent<HingeJoint2D>();
+        hinge.connectedAnchor = startPosition + Vector3.up * 2f; // Connect to a point above
+        hinge.useMotor = true;
+
+        JointMotor2D motor = hinge.motor;
+        motor.motorSpeed = Random.Range(30f, 60f);
+        motor.maxMotorTorque = 1000f; // High torque for fast swinging
+        hinge.motor = motor;
     }
 }
