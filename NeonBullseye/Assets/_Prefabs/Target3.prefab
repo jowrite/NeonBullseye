@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 6275309309885203971}
   - component: {fileID: 1994931144994777189}
   - component: {fileID: 7831763068065519695}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Target3
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -168,8 +168,6 @@ MonoBehaviour:
   activeColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   patternColor: {r: 0, g: 0, b: 1, a: 1}
-  hitParticles: {fileID: 0}
-  patternParticles: {fileID: 0}
   hitFlashDuration: 0.2
   hitBrightness: 2.5
   patternOutlineWidth: 3

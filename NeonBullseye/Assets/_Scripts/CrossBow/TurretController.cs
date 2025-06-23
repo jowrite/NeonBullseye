@@ -21,14 +21,21 @@ public class TurretController : MonoBehaviour
     [SerializeField] private float chargeRate = 15f;
     [SerializeField] private Transform arrowSpawnPoint;
     [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private float gravityScale = 0.5f;
 
     private float currentCharge = 0f;
     private bool isCharging = false;
+    private Rigidbody2D rb; // Reference to the Rigidbody2D component for physics interactions
 
     #region Setup and Initialization
     //Subscribe to input events
     private void Start()
     {
+        //Using rigidbody for kinematic movement
+        rb = gameObject.AddComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic; // Set Rigidbody2D to kinematic for manual control
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
         InputManager.Instance.OnVerticalMovement += HandleVerticalMovement;
         InputManager.Instance.OnRotation += HandleRotation;
         InputManager.Instance.OnChargeStart += StartCharging;
@@ -62,26 +69,29 @@ public class TurretController : MonoBehaviour
     {
         if (GameManager.gm.isGamePaused || !GameManager.gm.isGameStarted) return;
 
-        // Calculate new position based on input
-        Vector3 newPosition = transform.position + Vector3.up * inputValue * verticalSpeed * Time.deltaTime;
+        // Calculate new position using 
+        Vector2 newPosition = rb.position + Vector2.up * inputValue * verticalSpeed * Time.deltaTime; // Move the turret vertically
         // Clamp the Y position within bounds
         newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
         // Apply the new position to the turret
-        transform.position = newPosition; 
+        transform.position = newPosition;
+        rb.MovePosition(newPosition);
     }
 
     private void HandleRotation(float inputValue)
     {
         if (GameManager.gm.isGamePaused || !GameManager.gm.isGameStarted) return;
 
-        float newRotation = transform.eulerAngles.z - inputValue * rotationSpeed * Time.deltaTime; // Calculate new rotation based on input
+        //Calculate rotation in local space
+        float currentRotation = transform.localEulerAngles.z;
 
         // Normalize rotation to -180 to 180 range
-        if (newRotation > 180) newRotation -= 360;
+        if (currentRotation > 180) currentRotation -= 360;
         // Clamp the rotation within bounds
+        float newRotation = currentRotation - inputValue * rotationSpeed * Time.deltaTime;
         newRotation = Mathf.Clamp(newRotation, minAngle, maxAngle);
         // Apply the new rotation to the turret
-        transform.rotation = Quaternion.Euler(0, 0, newRotation); 
+        transform.localRotation = Quaternion.Euler(0, 0, newRotation); 
     }
 
     //Redundant shooting method commented out for clarity
@@ -109,16 +119,25 @@ public class TurretController : MonoBehaviour
 
     private void StartCharging()
     {
+        if (GameManager.gm.isGamePaused) return;
         isCharging = true;
         currentCharge = 0f; // Reset charge power when starting to charge
     }
 
     private void ReleaseArrow()
     {
+        if (!isCharging || GameManager.gm.isGamePaused) return;
+
         isCharging = false;
-        GameObject arrow = Instantiate(arrowPrefab, arrowSpawnPoint.position, arrowSpawnPoint.rotation);
-        arrow.GetComponent<ArrowController>().Launch(currentCharge); // Pass the charge power to the arrow controller
+        GameObject arrow = Instantiate(arrowPrefab, arrowSpawnPoint.position, transform.rotation);
+        
+        ArrowController arrowController = arrow.GetComponent<ArrowController>();
+        if (arrowController != null)
+        {
+            arrowController.Launch(currentCharge, gravityScale);
+        }
         currentCharge = 0f; // Reset charge power after shooting
+        GameManager.gm.ArrowShot(); //Notify GameManager
     }
 
     #endregion

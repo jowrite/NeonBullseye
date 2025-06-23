@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2917109766418096402}
   - component: {fileID: 657212736998452461}
   - component: {fileID: 7428227983092450559}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: txt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 4392372570496565858}
   - component: {fileID: 842426413142778174}
   - component: {fileID: 1880849624422847223}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: bgbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263,7 +263,7 @@ GameObject:
   - component: {fileID: 6553831748961767069}
   - component: {fileID: 5368577981981535533}
   - component: {fileID: 7434865955243492039}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ScorePopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}

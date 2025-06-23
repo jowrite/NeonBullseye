@@ -10,8 +10,8 @@ public class TargetFSM : MonoBehaviour
     [SerializeField] private Color activeColor = Color.yellow;
     [SerializeField] private Color hitColor = Color.red;
     [SerializeField] private Color patternColor = Color.blue;
-    [SerializeField] private ParticleSystem hitParticles;
-    [SerializeField] private ParticleSystem patternParticles;
+    //[SerializeField] private ParticleSystem hitParticles;
+    //[SerializeField] private ParticleSystem patternParticles;
     [SerializeField] private float hitFlashDuration = 0.2f;
     [SerializeField] private float hitBrightness = 2.5f;
     [SerializeField] private float patternOutlineWidth = 3f;
@@ -23,6 +23,7 @@ public class TargetFSM : MonoBehaviour
     [SerializeField] private AudioClip resetSound;
 
     private TargetState currentState;
+    public bool IsHit => currentState == TargetState.Hit;
     private SpriteRenderer spriteRenderer;
     private Material targetMaterial; //For shader effects
     private Color defaultColor;
@@ -31,6 +32,7 @@ public class TargetFSM : MonoBehaviour
     private int patternBonus = 500; // Bonus for hitting a pattern target
 
     public enum MovementType { Static, SineWave, Swing }
+
     [Header("Target Movement Settings")]
     [SerializeField] private MovementType movementType;
     [SerializeField] private float moveSpeed = 2f;
@@ -93,14 +95,14 @@ public class TargetFSM : MonoBehaviour
             case TargetState.Hit:
                 spriteRenderer.color = hitColor;
                 targetMaterial.SetFloat("_HitFlash", 1f);
-                hitParticles.Play();
-                AudioSource.PlayClipAtPoint(hitSound, transform.position);
+                //hitParticles.Play();
+                //AudioSource.PlayClipAtPoint(hitSound, transform.position);
                 Invoke(nameof(ResetTarget), hitFlashDuration);
                 break;
             case TargetState.Pattern:
                 spriteRenderer.color = patternColor;
-                patternParticles.Play();
-                AudioSource.PlayClipAtPoint(patternSound, transform.position);
+                //patternParticles.Play();
+                //AudioSource.PlayClipAtPoint(patternSound, transform.position);
                 break;
         }
     }
@@ -128,6 +130,12 @@ public class TargetFSM : MonoBehaviour
 
     private void ResetTarget()
     {
+        SetState(TargetState.Idle);
+    }
+
+    public void ResetToIdle()
+    {
+        CancelInvoke(nameof(ResetTarget));
         SetState(TargetState.Idle);
     }
 
@@ -160,7 +168,7 @@ public class TargetFSM : MonoBehaviour
         //SFX
         AudioSource.PlayClipAtPoint(patternSound, transform.position, 0.7f);
         //VFX
-        patternParticles.Play();
+        //patternParticles.Play();
         //Shader effects
         targetMaterial.SetFloat("_OutlineEnabled", 1f);
         targetMaterial.SetColor("_OutlineColor", patternOutlineColor);

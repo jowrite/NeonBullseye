@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-#if UNITY_WEBGL
-//Prevent input lag in browser
-Input.ResetInputAxes();
-Input.simulationMode = InputSimulationMode.ForceUnity;
-#endif
+
 
 public class GameManager : MonoBehaviour
 {
@@ -42,6 +38,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        #if UNITY_WEBGL
+        //Prevent input lag in browser
+        Input.ResetInputAxes();
+        Input.simulationMode = InputSimulationMode.ForceUnity;
+        #endif
+
         if (gm == null) gm = this;
         else Destroy(gameObject);
     }
@@ -60,6 +62,7 @@ public class GameManager : MonoBehaviour
         remainingPatternAttempts = maxPatternAttempts;
 
         pm.StartNewRound(currentRound);
+
         Debug.Log("Starting Round: " + currentRound);
         isGameStarted = true;
 
