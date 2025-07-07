@@ -82,6 +82,8 @@ public class TurretController : MonoBehaviour
     {
         if (GameManager.gm.isGamePaused || !GameManager.gm.isGameStarted) return;
 
+        //T
+
         //Calculate rotation in local space
         float currentRotation = transform.localEulerAngles.z;
 
@@ -94,7 +96,7 @@ public class TurretController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, 0, newRotation); 
     }
 
-    //Redundant shooting method commented out for clarity
+    //Redundant shooting method
     //private void HandleShooting()
     //{
     //    if (InputManager.GetKeyDown(KeyCode.Space)) // Check if the space key is pressed to start charging

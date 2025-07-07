@@ -74,6 +74,8 @@ public class GameManager : MonoBehaviour
         ui.SetupArrowIcons(arrowsPerRound);
     }
 
+    #region Pause and Resume Methods
+
     private void TogglePause()
     {
         if (isGameOver) return; // Prevent toggling pause if the game is over
@@ -82,7 +84,6 @@ public class GameManager : MonoBehaviour
         else PauseGame();
     }
 
-    #region Pause and Resume Methods
     public void PauseGame()
     {
         isGamePaused = true;

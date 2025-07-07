@@ -7,8 +7,12 @@ using UnityEngine;
 public class ArrowController : MonoBehaviour
 {
     [Header("Physics Settings")]
-    [SerializeField] private float launchMultiplier = 10f;
-    [SerializeField] private float maxLifetime = 5f; //adjust as needed
+    [SerializeField] private float initialSpeed = 10f; // Initial speed of the arrow
+    [SerializeField] private float horizontalVel;
+    [SerializeField] private float verticalVel;
+    [SerializeField] private float maxLifetime = 10f; // Maximum lifetime before arrow is destroyed
+    [SerializeField] private float maxHeight = 5f; // Maximum height the arrow can reach
+    [SerializeField] private float launchAngle = 45f; // Launch angle in degrees
 
     private Rigidbody2D rb;
     private float lifetimeTimer;
@@ -19,7 +23,7 @@ public class ArrowController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic; // Start as kinematic until launched
+        rb.bodyType = RigidbodyType2D.Kinematic; // Set to be Kinematic to control movement manually
 
     }
 
@@ -33,23 +37,12 @@ public class ArrowController : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        //Rotate arrow to follow trajectory
-        if (rb.linearVelocity.sqrMagnitude > 0.01f)
-        {
-            float angle = Mathf.Atan2(rb.linearVelocity.y, rb.linearVelocity.x) * Mathf.Rad2Deg;
-            Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
-
     }
 
-    public void Launch(float power, float gravityScale)
+    public void Launch()
     {
-        rb.bodyType = RigidbodyType2D.Dynamic; // Switch to dynamic for physics simulation
-        rb.gravityScale = gravityScale;
-        rb.AddForce(transform.right * power * launchMultiplier, ForceMode2D.Impulse);
+        // NEED TO FIX THIS - MUST BE KINEMATIC ALWAYS, can't use physics engine
+        
         isLaunched = true;
         lifetimeTimer = maxLifetime; // Reset lifetime timer
     }
@@ -76,29 +69,10 @@ public class ArrowController : MonoBehaviour
 
         //Parent to target and disable physics
         transform.SetParent(target);
-        rb.bodyType = RigidbodyType2D.Kinematic; // Disable physics interactions
+        
         rb.linearVelocity = Vector2.zero; // Stop any remaining movement
-
-
-        //Rotation arrow perpendicular to target surface
-        Vector3 hitNormal = (transform.position - target.position).normalized;
-        float stickAngle = Mathf.Atan2(hitNormal.y, hitNormal.x) * Mathf.Rad2Deg;
-        StartCoroutine(RotateToStickPosition(Quaternion.Euler(0, 0, stickAngle + 90f)));
     }
 
-    private IEnumerator RotateToStickPosition(Quaternion targetRotation)
-    {
-        float duration = 0.3f;
-        float elapsed = 0;
-
-        Quaternion startRotation = transform.rotation;
-
-        while(elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsed / duration);
-            yield return null;
-        }
-    }
+    
 }
 
