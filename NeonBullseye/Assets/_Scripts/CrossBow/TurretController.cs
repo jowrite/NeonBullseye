@@ -96,29 +96,6 @@ public class TurretController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, 0, newRotation); 
     }
 
-    //Redundant shooting method
-    //private void HandleShooting()
-    //{
-    //    if (InputManager.GetKeyDown(KeyCode.Space)) // Check if the space key is pressed to start charging
-    //    {
-    //        StartCharging();
-    //    }
-
-    //    else if (InputManager.GetKeyUp(KeyCode.Space)) // Check if the space key is released to shoot
-    //    {
-    //        ReleaseArrow();
-    //    }
-
-    //    if (isCharging)
-    //    {
-    //        // Increment charge power while charging
-    //        currentCharge += chargeRate * Time.deltaTime;
-    //        // Clamp the charge power to the maximum limit
-    //        currentCharge = Mathf.Clamp(currentCharge, 0, maxChargePower);
-    //        //visual feedback for charging can be added here, e.g. changing UI or turret appearance
-    //    }
-    //}
-
     private void StartCharging()
     {
         if (GameManager.gm.isGamePaused) return;
@@ -134,10 +111,11 @@ public class TurretController : MonoBehaviour
         GameObject arrow = Instantiate(arrowPrefab, arrowSpawnPoint.position, transform.rotation);
         
         ArrowController arrowController = arrow.GetComponent<ArrowController>();
-        if (arrowController != null)
-        {
-            arrowController.Launch(currentCharge, gravityScale);
-        }
+        
+        float turretAngle = transform.localEulerAngles.z; // Get the current turret angle
+        if (turretAngle > 180f) turretAngle -= 360f; // Normalize angle to -180 to 180 range
+        arrowController.Launch(currentCharge, gravityScale, turretAngle); // Launch the arrow with the current charge power and angle
+
         currentCharge = 0f; // Reset charge power after shooting
         GameManager.gm.ArrowShot(); //Notify GameManager
     }

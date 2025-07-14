@@ -8,43 +8,67 @@ public class ArrowController : MonoBehaviour
 {
     [Header("Physics Settings")]
     [SerializeField] private float initialSpeed = 10f; // Initial speed of the arrow
-    [SerializeField] private float horizontalVel;
-    [SerializeField] private float verticalVel;
     [SerializeField] private float maxLifetime = 10f; // Maximum lifetime before arrow is destroyed
-    [SerializeField] private float maxHeight = 5f; // Maximum height the arrow can reach
     [SerializeField] private float launchAngle = 45f; // Launch angle in degrees
+    [SerializeField] private float gravity = 9.8f;
+
+    [SerializeField] private Vector3 startPosition; // Initial position of the arrow, assign in Inspector (tip of crossbow)
+    private float launchTime;
+    private float horizontalVel;
+    private float verticalVel;
 
     private Rigidbody2D rb;
-    private float lifetimeTimer;
     private bool isLaunched;
     private bool isStuck;
-
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic; // Set to be Kinematic to control movement manually
+        startPosition = transform.position; // Store the initial position of the arrow
 
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (!isLaunched || isStuck) return;
 
-        lifetimeTimer -= Time.deltaTime;
-        if (lifetimeTimer <= 0f)
+        float timeSinceLaunch = Time.time - launchTime;
+
+        //Manually calculate the position
+        float x = startPosition.x + horizontalVel * timeSinceLaunch;
+        float y = startPosition.y + verticalVel * timeSinceLaunch - 0.5f * gravity * timeSinceLaunch * timeSinceLaunch;
+
+        transform.position = new Vector2(x, y);
+
+        //Rotate to face the velocity direction
+        float currentVy = verticalVel - gravity * timeSinceLaunch;
+        Vector2 velocity = new Vector2(horizontalVel, currentVy);
+        float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        //Destroy arrow after max lifetime
+        if (timeSinceLaunch > maxLifetime)
         {
             Destroy(gameObject);
-            return;
         }
+
+
     }
 
-    public void Launch()
+    public void Launch(float speed, float gravityStrength, float angleDegrees)
     {
-        // NEED TO FIX THIS - MUST BE KINEMATIC ALWAYS, can't use physics engine
-        
         isLaunched = true;
-        lifetimeTimer = maxLifetime; // Reset lifetime timer
+        launchTime = Time.time;
+        startPosition = transform.position;
+
+        initialSpeed = speed;
+        gravity = gravityStrength;
+        launchAngle = angleDegrees;
+
+        float angleRad = launchAngle * Mathf.Deg2Rad; // Convert angle to radians
+        horizontalVel = initialSpeed * Mathf.Cos(angleRad); // Calculate horizontal velocity
+        verticalVel = initialSpeed * Mathf.Sin(angleRad); // Calculate vertical velocity
     }
 
     private void OnTriggerEnter2D(Collider2D other)
