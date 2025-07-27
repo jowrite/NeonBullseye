@@ -15,6 +15,10 @@ public class TurretController : MonoBehaviour
     [SerializeField] private float rotationSpeed = 100f;
     [SerializeField] private float minAngle = -60f;
     [SerializeField] private float maxAngle = 60f;
+    [SerializeField] private LineRenderer trajectoryLine;
+    [SerializeField] private bool showTrajectory = true; // Toggle to show/hide trajectory line
+    [SerializeField] private int trajectorySteps = 30; // Number of steps in the trajectory line
+    [SerializeField] private float timeStep = 0.1f; //Time between points
 
     [Header("Shooting Settings")]
     [SerializeField] private float maxChargePower = 50f;
@@ -59,9 +63,16 @@ public class TurretController : MonoBehaviour
         {
             currentCharge += chargeRate * Time.deltaTime; // Increment charge power while charging
             currentCharge = Mathf.Clamp(currentCharge, 0, maxChargePower); // Clamp the charge power to the maximum limit
+            
+            if (showTrajectory)
+            {
+                DrawTrajectory(currentCharge); // Draw the trajectory line while charging
+            }
             //Add visual feedback for charging here
         }
     }
+
+    
     #endregion
 
     #region Movement and Aiming
@@ -69,31 +80,32 @@ public class TurretController : MonoBehaviour
     {
         if (GameManager.gm.isGamePaused || !GameManager.gm.isGameStarted) return;
 
-        // Calculate new position using 
-        Vector2 newPosition = rb.position + Vector2.up * inputValue * verticalSpeed * Time.deltaTime; // Move the turret vertically
+     
+        Vector2 move = rb.position + Vector2.up * inputValue * verticalSpeed * Time.deltaTime; // Move the turret upwards
         // Clamp the Y position within bounds
-        newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
+        move.y = Mathf.Clamp(move.y, minY, maxY);
         // Apply the new position to the turret
-        transform.position = newPosition;
-        rb.MovePosition(newPosition);
+        rb.MovePosition(move);
+
+
     }
 
     private void HandleRotation(float inputValue)
     {
         if (GameManager.gm.isGamePaused || !GameManager.gm.isGameStarted) return;
 
-        //T
 
-        //Calculate rotation in local space
-        float currentRotation = transform.localEulerAngles.z;
+        //Convert world rotation to -180 to 180 range
+        float currentZ = transform.localEulerAngles.z;
+        if (currentZ > 180f) currentZ -= 360f; // Normalize to -180 to 180 range
 
-        // Normalize rotation to -180 to 180 range
-        if (currentRotation > 180) currentRotation -= 360;
-        // Clamp the rotation within bounds
-        float newRotation = currentRotation - inputValue * rotationSpeed * Time.deltaTime;
-        newRotation = Mathf.Clamp(newRotation, minAngle, maxAngle);
-        // Apply the new rotation to the turret
-        transform.localRotation = Quaternion.Euler(0, 0, newRotation); 
+        //Apply input
+        float newZ = currentZ + inputValue * rotationSpeed * Time.deltaTime;
+        newZ = Mathf.Clamp(newZ, minAngle, maxAngle);
+
+        transform.localRotation = Quaternion.Euler(0f, 0f, newZ); // Set the new rotation of the turret
+
+
     }
 
     private void StartCharging()
@@ -101,6 +113,32 @@ public class TurretController : MonoBehaviour
         if (GameManager.gm.isGamePaused) return;
         isCharging = true;
         currentCharge = 0f; // Reset charge power when starting to charge
+    }
+
+    private void DrawTrajectory(float currentCharge)
+    {
+        Vector3[] points = new Vector3[trajectorySteps];
+
+        float angleDeg = transform.localEulerAngles.z; // Get the current turret angle in degrees
+        if (angleDeg > 180f) angleDeg -= 360f; // Normalize angle to -180 to 180 range
+        float angleRad = angleDeg * Mathf.Deg2Rad; // Convert to radians
+
+        float speed = currentCharge * 0.1f; // Scale speed based on charge power
+        float vx = speed * Mathf.Cos(angleRad); // Horizontal velocity
+        float vy = speed * Mathf.Sin(angleRad); // Vertical velocity
+
+        Vector2 start = arrowSpawnPoint.position; // Start position of the trajectory
+
+        for (int i = 0; i < trajectorySteps; i++)
+        {
+            float t = i * timeStep; // Time increment for each step
+            float dx = vx * t; // Horizontal displacement
+            float dy = vy * t - 0.5f * gravityScale * t * t; // Vertical displacement with gravity effect
+            points[i] = new Vector3(start.x + dx, start.y + dy, 0f); // Calculate the point in the trajectory
+        }
+
+        trajectoryLine.positionCount = trajectorySteps;
+        trajectoryLine.SetPositions(points); // Set the positions of the trajectory line renderer
     }
 
     private void ReleaseArrow()
@@ -118,6 +156,7 @@ public class TurretController : MonoBehaviour
 
         currentCharge = 0f; // Reset charge power after shooting
         GameManager.gm.ArrowShot(); //Notify GameManager
+        trajectoryLine.positionCount = 0; // Clear the trajectory line after shooting
     }
 
     #endregion
