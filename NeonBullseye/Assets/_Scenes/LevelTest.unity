@@ -333,7 +333,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Positions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 1}
@@ -344,7 +344,7 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.30061835
+        time: 0
         value: 1
         inSlope: 0
         outSlope: 0
@@ -1567,16 +1567,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71b8a4b81fe51f745a6b49ef6f0e243c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  verticalSpeed: 5
-  minY: -4
-  maxY: 4
-  rotationSpeed: 100
+  verticalSpeed: 15
+  minY: -10
+  maxY: 10
+  rotationSpeed: 200
   minAngle: -60
   maxAngle: 60
   trajectoryLine: {fileID: 176187454}
   showTrajectory: 1
-  trajectorySteps: 30
-  timeStep: 0.1
+  trajectorySteps: 50
+  timeStep: 0.2
   maxChargePower: 50
   chargeRate: 15
   arrowSpawnPoint: {fileID: 661742095}

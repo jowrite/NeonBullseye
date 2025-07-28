@@ -7,19 +7,17 @@ using UnityEngine;
 public class ArrowController : MonoBehaviour
 {
     [Header("Physics Settings")]
-    [SerializeField] private float initialSpeed = 10f; // Initial speed of the arrow
+    
     [SerializeField] private float maxLifetime = 10f; // Maximum lifetime before arrow is destroyed
-    [SerializeField] private float launchAngle = 45f; // Launch angle in degrees
-    [SerializeField] private float gravity = 9.8f;
-
-    [SerializeField] private Vector3 startPosition; // Initial position of the arrow, assign in Inspector (tip of crossbow)
-    private float launchTime;
-    private float horizontalVel;
-    private float verticalVel;
-
+    
+    
     private Rigidbody2D rb;
     private bool isLaunched;
     private bool isStuck;
+    private Vector2 startPosition; // Initial position of the arrow, assign in Inspector (tip of crossbow)
+    private float launchTime;
+    private Vector2 initialVelocity; // Initial speed of the arrow
+    private float gravity;
 
     private void Awake()
     {
@@ -35,40 +33,53 @@ public class ArrowController : MonoBehaviour
 
         float timeSinceLaunch = Time.time - launchTime;
 
-        //Manually calculate the position
-        float x = startPosition.x + horizontalVel * timeSinceLaunch;
-        float y = startPosition.y + verticalVel * timeSinceLaunch - 0.5f * gravity * timeSinceLaunch * timeSinceLaunch;
-
-        transform.position = new Vector2(x, y);
+        //Manually calculate the position using kinematic equations
+        Vector2 currentPosition = new Vector2(
+            startPosition.x + initialVelocity.x * timeSinceLaunch,
+            startPosition.y + initialVelocity.y * timeSinceLaunch - 0.5f * gravity * timeSinceLaunch * timeSinceLaunch
+        );
 
         //Rotate to face the velocity direction
-        float currentVy = verticalVel - gravity * timeSinceLaunch;
-        Vector2 velocity = new Vector2(horizontalVel, currentVy);
-        float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        Vector2 currentVelocity = new Vector2(initialVelocity.x, initialVelocity.y - gravity * timeSinceLaunch);
+
+        //Update position and rotation
+        rb.MovePosition(currentPosition);
+        float currentAngle = Mathf.Atan2(currentVelocity.y, currentVelocity.x) * Mathf.Rad2Deg; // Convert to degrees
+        transform.rotation = Quaternion.AngleAxis(currentAngle, Vector3.forward);
 
         //Destroy arrow after max lifetime
         if (timeSinceLaunch > maxLifetime)
         {
             Destroy(gameObject);
         }
-
-
     }
 
-    public void Launch(float speed, float gravityStrength, float angleDegrees)
+    public void Launch(float speed, float gravityScale, float angleDegrees)
     {
         isLaunched = true;
         launchTime = Time.time;
         startPosition = transform.position;
+        gravity = gravityScale * Mathf.Abs(Physics2D.gravity.y); //Convert scale to actual gravity value
 
-        initialSpeed = speed;
-        gravity = gravityStrength;
-        launchAngle = angleDegrees;
+        //Convert angle to radians (accounting Unity's coordinate system ***0 degrees is right, 90 degrees is up)
+        float angleRad = (90f - angleDegrees) * Mathf.Deg2Rad;
 
-        float angleRad = launchAngle * Mathf.Deg2Rad; // Convert angle to radians
-        horizontalVel = initialSpeed * Mathf.Cos(angleRad); // Calculate horizontal velocity
-        verticalVel = initialSpeed * Mathf.Sin(angleRad); // Calculate vertical velocity
+        //Calculate initial velocity components
+        initialVelocity = new Vector2(
+            speed * Mathf.Cos(angleRad), 
+            speed * Mathf.Sin(angleRad)
+        );
+
+        //Debug to verify values
+        Debug.Log($"Launching arrow with speed={speed}, angle={angleDegrees}, velocity={initialVelocity}, gravity={gravity}");
+
+        //Set initial rotation
+        float launchAngle = Mathf.Atan2(initialVelocity.y, initialVelocity.x) * Mathf.Rad2Deg; // Convert to degrees
+        transform.rotation = Quaternion.AngleAxis(launchAngle, Vector3.forward); // Set the rotation of the arrow
+
+        //Debugging visuals
+        Debug.DrawRay(transform.position, initialVelocity.normalized * 2f, Color.magenta, 2f);
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)

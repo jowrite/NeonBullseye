@@ -118,23 +118,24 @@ public class TurretController : MonoBehaviour
     private void DrawTrajectory(float currentCharge)
     {
         Vector3[] points = new Vector3[trajectorySteps];
+        Vector2 start = arrowSpawnPoint.position;
 
-        float angleDeg = transform.localEulerAngles.z; // Get the current turret angle in degrees
-        if (angleDeg > 180f) angleDeg -= 360f; // Normalize angle to -180 to 180 range
+        float angleDeg = -transform.localEulerAngles.z; // Get the current turret angle in degrees, negative because Unity's coordinate system has 0 degrees pointing right
         float angleRad = angleDeg * Mathf.Deg2Rad; // Convert to radians
 
         float speed = currentCharge * 0.1f; // Scale speed based on charge power
-        float vx = speed * Mathf.Cos(angleRad); // Horizontal velocity
-        float vy = speed * Mathf.Sin(angleRad); // Vertical velocity
+        Vector2 initialVelocity = new Vector2(speed * Mathf.Cos(angleRad), speed * Mathf.Sin(angleRad));
 
-        Vector2 start = arrowSpawnPoint.position; // Start position of the trajectory
+        //Use positive gravity value but subtract in calculations
+        float gravityValue = gravityScale * Mathf.Abs(Physics2D.gravity.y);
 
         for (int i = 0; i < trajectorySteps; i++)
         {
             float t = i * timeStep; // Time increment for each step
-            float dx = vx * t; // Horizontal displacement
-            float dy = vy * t - 0.5f * gravityScale * t * t; // Vertical displacement with gravity effect
-            points[i] = new Vector3(start.x + dx, start.y + dy, 0f); // Calculate the point in the trajectory
+            points[i] = new Vector3(
+                start.x + initialVelocity.x * t, 
+                start.y + initialVelocity.y * t - 0.5f * gravityValue * t * t, 0f);
+           // Calculate the position at time t using kinematic equations
         }
 
         trajectoryLine.positionCount = trajectorySteps;
@@ -150,8 +151,7 @@ public class TurretController : MonoBehaviour
         
         ArrowController arrowController = arrow.GetComponent<ArrowController>();
         
-        float turretAngle = transform.localEulerAngles.z; // Get the current turret angle
-        if (turretAngle > 180f) turretAngle -= 360f; // Normalize angle to -180 to 180 range
+        float turretAngle = -transform.localEulerAngles.z; // Get the current turret angle (negative here too)
         arrowController.Launch(currentCharge, gravityScale, turretAngle); // Launch the arrow with the current charge power and angle
 
         currentCharge = 0f; // Reset charge power after shooting
