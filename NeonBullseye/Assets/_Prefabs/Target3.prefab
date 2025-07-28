@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 8588101817892958585}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.52, y: 3.91, z: 0}
-  m_LocalScale: {x: 1.9651152, y: 1.8812299, z: 0.9167786}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -134,7 +134,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8588101817892958585}
-  m_BodyType: 1
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -166,8 +166,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  hitColor: {r: 1, g: 0, b: 0, a: 1}
-  patternColor: {r: 0, g: 0, b: 1, a: 1}
+  hitColor: {r: 0.49019608, g: 1, b: 0, a: 0.78431374}
+  patternColor: {r: 0.20784314, g: 0.18431373, b: 1, a: 0.78431374}
   hitFlashDuration: 0.2
   hitBrightness: 2.5
   patternOutlineWidth: 3
@@ -178,3 +178,5 @@ MonoBehaviour:
   movementType: 0
   moveSpeed: 4
   moveHeight: 4
+  pendulumLength: 2
+  thetaAngle: 30

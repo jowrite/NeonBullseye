@@ -41,8 +41,6 @@ public class TargetFSM : MonoBehaviour
     [SerializeField] private float moveHeight = 1.5f;
 
     //New swing movement settings
-    [SerializeField] private float swingAmplitude = 45f; //Max degrees left/right
-    [SerializeField] private float swingSpeed = 2f; //Adjusts how fast the target swings (tweak in inspector prn)
     [SerializeField] private float pendulumLength = 2f;
     [SerializeField] private float thetaAngle = 30f; //Initial angle in degrees
     private float g = 9.81f; //Gravity
