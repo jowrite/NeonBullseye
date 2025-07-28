@@ -37,6 +37,7 @@ public class TargetFSM : MonoBehaviour
     [SerializeField] private MovementType movementType;
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float moveHeight = 1.5f;
+    [SerializeField] private Rigidbody2D swingAnchor;
     private HingeJoint2D hinge; //For swing movement
     private Vector3 startPosition;
     private float randomOffset;
@@ -210,12 +211,24 @@ public class TargetFSM : MonoBehaviour
     private void SetupSwing()
     {
         hinge = gameObject.AddComponent<HingeJoint2D>();
-        hinge.connectedAnchor = startPosition + Vector3.up * 2f; // Connect to a point above
-        hinge.useMotor = true;
+        
+        if (swingAnchor != null)
+        {
+            hinge.connectedBody = swingAnchor;
+            hinge.anchor = Vector2.zero; // Set anchor to the center of the target
+            hinge.connectedAnchor = Vector2.zero; 
+        }
+        else
+        {
+            Debug.LogWarning("Swing anchor not assigned to " + gameObject.name);
+        }
 
-        JointMotor2D motor = hinge.motor;
-        motor.motorSpeed = Random.Range(30f, 60f);
-        motor.maxMotorTorque = 1000f; // High torque for fast swinging
+        hinge.useMotor = true;
+        JointMotor2D motor = new JointMotor2D
+        {
+            motorSpeed = Random.Range(30f, 60f),
+            maxMotorTorque = 1000f
+        };
         hinge.motor = motor;
     }
 }

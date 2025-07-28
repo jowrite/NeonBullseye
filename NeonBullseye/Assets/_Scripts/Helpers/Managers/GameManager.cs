@@ -155,7 +155,7 @@ public class GameManager : MonoBehaviour
         ui.UpdateScore(score);
     }
 
-    //helper method to show score popup
+    //NEED TO FIX THIS - ShowScorePopup is not working properly with world position
     public void ShowScorePopup(int points, Vector3 worldPosition)
     {
         GameObject popup = Instantiate(scorePopupPrefab, worldPosition, Quaternion.identity);
