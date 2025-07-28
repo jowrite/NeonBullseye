@@ -112,6 +112,9 @@ public class PatternManager : MonoBehaviour
 
         //Disable player input during pattern display
         //***DESIGN DECISION, maybe allow player to hit targets during pattern display?***
+        //IDEA: Show UI countdown timer during the pattern display while game is paused
+        //Need to have the pattern repeat after failed attempts
+
         if (!allowHitsDuringDisplay) 
         { 
             GameManager.gm.isGamePaused = true;

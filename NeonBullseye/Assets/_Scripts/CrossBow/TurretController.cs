@@ -75,7 +75,7 @@ public class TurretController : MonoBehaviour
     
     #endregion
 
-    #region Movement and Aiming
+    #region Movement and Aiming Methods
     private void HandleVerticalMovement(float inputValue)
     {
         if (GameManager.gm.isGamePaused || !GameManager.gm.isGameStarted) return;

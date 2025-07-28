@@ -21,6 +21,8 @@ public class UIControls : MonoBehaviour
     private List<GameObject> arrowIcons = new List<GameObject>(); // List to hold arrow icons
 
 
+    //Need to review this logic - score not updating properly & score popup not showing
+
     public void UpdateScore(int score)
     {
         scoreValue.text = score.ToString();

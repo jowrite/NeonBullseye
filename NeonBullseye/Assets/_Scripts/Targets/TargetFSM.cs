@@ -31,27 +31,35 @@ public class TargetFSM : MonoBehaviour
     private int baseScore = 100; // Base score for hitting a target
     private int patternBonus = 500; // Bonus for hitting a pattern target
 
+    #region Movement Parameters
+
     public enum MovementType { Static, SineWave, Swing }
 
     [Header("Target Movement Settings")]
     [SerializeField] private MovementType movementType;
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float moveHeight = 1.5f;
-    [SerializeField] private Rigidbody2D swingAnchor;
-    private HingeJoint2D hinge; //For swing movement
+
+    //New swing movement settings
+    [SerializeField] private float swingAmplitude = 45f; //Max degrees left/right
+    [SerializeField] private float swingSpeed = 2f; //Adjusts how fast the target swings (tweak in inspector prn)
+    [SerializeField] private float pendulumLength = 2f;
+    [SerializeField] private float thetaAngle = 30f; //Initial angle in degrees
+    private float g = 9.81f; //Gravity
+    private float omega;
+
     private Vector3 startPosition;
     private float randomOffset;
 
+    #endregion
 
+    #region Setup and Initialization
     private void Start()
     {
         startPosition = transform.position;
-        randomOffset = Random.Range(0f, 6.28f);
+        //randomOffset = Random.Range(0f, 6.28f); unsure if even need this, but keeping for now
+        omega = Mathf.Sqrt(g / pendulumLength); //Calculate angular frequency for swing
 
-        if (movementType == MovementType.Swing)
-        {
-            SetupSwing();
-        }    
     }
 
     private void Update()
@@ -59,10 +67,22 @@ public class TargetFSM : MonoBehaviour
         switch (movementType)
         {
             case MovementType.SineWave:
+                // Sine wave movement
                 float newY = startPosition.y + Mathf.Sin(Time.time * moveSpeed + randomOffset) * moveHeight;
                 transform.position = new Vector3(startPosition.x, newY, startPosition.z);
                 break;
+
+            case MovementType.Static:
+                // Do nothing, target remains static
+                break;
+
+            case MovementType.Swing: //Simulates a pendulum swing
+                float thetaRad = thetaAngle * Mathf.Deg2Rad; //Convert angle to radians
+                float angle = thetaRad * Mathf.Cos(omega * Time.deltaTime); //Calculate angle based on pendulum motion
+                transform.localRotation = Quaternion.Euler(0f, 0f, angle * Mathf.Rad2Deg); //Apply rotation
+                break;
         }
+        
     }
 
 
@@ -108,6 +128,9 @@ public class TargetFSM : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Target Interaction Methods
     public void HandleHit()
     {
         if (currentState == TargetState.Pattern)
@@ -199,36 +222,8 @@ public class TargetFSM : MonoBehaviour
     {
         this.movementType = type;
         this.moveHeight = moveHeight;
-
-        if (hinge != null)
-        {
-            JointMotor2D motor = hinge.motor;
-            motor.motorSpeed = swingSpeed;
-            hinge.motor = motor;
-        }
     }
 
-    private void SetupSwing()
-    {
-        hinge = gameObject.AddComponent<HingeJoint2D>();
-        
-        if (swingAnchor != null)
-        {
-            hinge.connectedBody = swingAnchor;
-            hinge.anchor = Vector2.zero; // Set anchor to the center of the target
-            hinge.connectedAnchor = Vector2.zero; 
-        }
-        else
-        {
-            Debug.LogWarning("Swing anchor not assigned to " + gameObject.name);
-        }
+    #endregion
 
-        hinge.useMotor = true;
-        JointMotor2D motor = new JointMotor2D
-        {
-            motorSpeed = Random.Range(30f, 60f),
-            maxMotorTorque = 1000f
-        };
-        hinge.motor = motor;
-    }
 }

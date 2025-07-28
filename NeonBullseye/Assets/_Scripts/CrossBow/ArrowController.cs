@@ -10,7 +10,6 @@ public class ArrowController : MonoBehaviour
     
     [SerializeField] private float maxLifetime = 10f; // Maximum lifetime before arrow is destroyed
     
-    
     private Rigidbody2D rb;
     private bool isLaunched;
     private bool isStuck;
@@ -18,6 +17,8 @@ public class ArrowController : MonoBehaviour
     private float launchTime;
     private Vector2 initialVelocity; // Initial speed of the arrow
     private float gravity;
+
+    #region Setup and Initialization
 
     private void Awake()
     {
@@ -54,6 +55,10 @@ public class ArrowController : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Arrow Behavior Methods
+
     public void Launch(float speed, float gravityScale, float angleDegrees)
     {
         isLaunched = true;
@@ -78,7 +83,7 @@ public class ArrowController : MonoBehaviour
         transform.rotation = Quaternion.AngleAxis(launchAngle, Vector3.forward); // Set the rotation of the arrow
 
         //Debugging visuals
-        Debug.DrawRay(transform.position, initialVelocity.normalized * 2f, Color.magenta, 2f);
+        Debug.DrawRay(transform.position, initialVelocity.normalized * 5f, Color.magenta, 4f);
 
     }
 
@@ -107,7 +112,7 @@ public class ArrowController : MonoBehaviour
         
         rb.linearVelocity = Vector2.zero; // Stop any remaining movement
     }
+    #endregion
 
-    
 }
 

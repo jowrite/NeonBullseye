@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager gm;
@@ -36,6 +34,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIControls ui;
     [SerializeField] private GameObject scorePopupPrefab;
 
+
+    #region Setup and Initialization
     private void Awake()
     {
         #if UNITY_WEBGL
@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviour
         ui.UpdatePatternAttempts(remainingPatternAttempts, maxPatternAttempts);
         ui.SetupArrowIcons(arrowsPerRound);
     }
+    #endregion
 
     #region Pause and Resume Methods
 
