@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
         #if UNITY_WEBGL
         //Prevent input lag in browser
         Input.ResetInputAxes();
-        Input.simulationMode = InputSimulationMode.ForceUnity;
+        //Input.SimulationMode = InputSimulationMode.ForceUnity;
         #endif
 
         if (gm == null) gm = this;

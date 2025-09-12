@@ -12,7 +12,7 @@ public class ButtonPressText : MonoBehaviour
 
     public void OnButtonPress()
     {
-        buttonTextRect.localPosition = originalPosition + new Vector3(0, 3f, 0);
+        buttonTextRect.localPosition = originalPosition + new Vector3(0, 4f, 0);
     }
 
     public void OnButtonRelease()
