@@ -95,7 +95,11 @@ public class ArrowController : MonoBehaviour
         {
             StickToTarget(other.transform);
             TargetFSM target = other.GetComponent<TargetFSM>();
-            if (target != null) target.HandleHit(); // Call the target's hit handling method
+            if (target != null)
+            {
+                target.HandleHit(); // Call the target's hit handling method
+                GameManager.gm.TargetHit(); // Notify GameManager of a target hit
+            }
         }
         else if (other.CompareTag("Boundary"))
         {
@@ -111,6 +115,9 @@ public class ArrowController : MonoBehaviour
         transform.SetParent(target);
         
         rb.linearVelocity = Vector2.zero; // Stop any remaining movement
+
+        //Destroy after a short delay
+        Destroy(gameObject, 3f);
     }
     #endregion
 

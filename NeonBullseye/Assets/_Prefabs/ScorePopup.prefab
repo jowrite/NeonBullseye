@@ -261,7 +261,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5675257545100898825}
   - component: {fileID: 6553831748961767069}
-  - component: {fileID: 5368577981981535533}
   - component: {fileID: 7434865955243492039}
   m_Layer: 5
   m_Name: ScorePopup
@@ -279,16 +278,16 @@ RectTransform:
   m_GameObject: {fileID: 8588844008733834837}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.26840687}
-  m_LocalScale: {x: 8.059353, y: 8.059353, z: 8.059353}
+  m_LocalScale: {x: 158.99544, y: 158.99544, z: 158.99544}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4392372570496565858}
   - {fileID: 2917109766418096402}
+  - {fileID: 4392372570496565858}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1615, y: 1024}
+  m_AnchoredPosition: {x: -25, y: -27}
   m_SizeDelta: {x: 15, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &6553831748961767069
@@ -300,7 +299,7 @@ Canvas:
   m_GameObject: {fileID: 8588844008733834837}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 2
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -314,28 +313,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!95 &5368577981981535533
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8588844008733834837}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7434865955243492039
 MonoBehaviour:
   m_ObjectHideFlags: 0

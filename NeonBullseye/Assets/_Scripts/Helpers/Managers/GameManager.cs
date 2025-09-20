@@ -159,7 +159,13 @@ public class GameManager : MonoBehaviour
     //NEED TO FIX THIS - ShowScorePopup is not working properly with world position
     public void ShowScorePopup(int points, Vector3 worldPosition)
     {
-        GameObject popup = Instantiate(scorePopupPrefab, worldPosition, Quaternion.identity);
+        //Convert world to screen position
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
+
+        GameObject popup = Instantiate(scorePopupPrefab, ui.transform);
+
+        //Move to screen position
+        popup.transform.position = screenPos;
         popup.GetComponent<ScorePopup>().Setup(points);
     }
 
